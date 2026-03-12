@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Electricity Shop</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
+</head>
+<body>
+  <h1>Electricity Shop Management</h1>
+
+  <!-- Products -->
+  <h2>Products</h2>
+  <input id="productName" placeholder="Product Name">
+  <input id="productCategory" placeholder="Category">
+  <input id="productPrice" placeholder="Price">
+  <input id="productStock" placeholder="Stock">
+  <input id="productSupplier" placeholder="Supplier">
+  <button onclick="addProduct()">Add Product</button>
+  <ul id="productList"></ul>
+
+  <script>
+    const supabaseUrl = 'https://bcoglhxpnfijbudfesvg.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJjb2dsaHhwbmZpamJ1ZGZlc3ZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzMTEyMDcsImV4cCI6MjA4ODg4NzIwN30.tSRSKC-U5a7FlQ8A1mEkWaQVTbZuirWWJAi_-gBdf44';
+    const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+    async function addProduct() {
+      const name = document.getElementById('productName').value;
+      const category = document.getElementById('productCategory').value;
+      const price = document.getElementById('productPrice').value;
+      const stock = document.getElementById('productStock').value;
+      const supplier = document.getElementById('productSupplier').value;
+
+      const { data, error } = await supabase
+        .from('products')
+        .insert([{ name, category, price, stock, supplier }]);
+
+      if(error) alert(error.message);
+      else alert('Product added!');
+      loadProducts();
+    }
+
+    async function loadProducts() {
+      const { data } = await supabase.from('products').select('*');
+      const list = document.getElementById('productList');
+      list.innerHTML = '';
+      data.forEach(p => {
+        const li = document.createElement('li');
+        li.textContent = `${p.name} - ${p.category} - ${p.price} - ${p.stock}`;
+        list.appendChild(li);
+      });
+    }
+
+    loadProducts();
+  </script>
+</body>
+</html>
